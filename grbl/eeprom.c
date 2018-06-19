@@ -21,21 +21,10 @@
 *                         $Revision: 1.6 $
 *                         $Date: Friday, February 11, 2005 07:16:44 UTC $
 ****************************************************************************/
-#include <avr/io.h>
+#include "eeprom_reg.h"
+#include "GIE_int.h"
 #include <avr/interrupt.h>
 
-/* These EEPROM bits have different names on different devices. */
-#ifndef EEPE
-		#define EEPE  EEWE  //!< EEPROM program/write enable.
-		#define EEMPE EEMWE //!< EEPROM master program/write enable.
-#endif
-
-/* These two are unfortunately not defined in the device include files. */
-#define EEPM1 5 //!< EEPROM Programming Mode Bit 1.
-#define EEPM0 4 //!< EEPROM Programming Mode Bit 0.
-
-/* Define to reduce code size. */
-#define EEPROM_IGNORE_SELFPROG //!< Remove SPM flag polling.
 
 /*! \brief  Read byte from EEPROM.
  *
@@ -49,7 +38,8 @@
 unsigned char eeprom_get_char( unsigned int addr )
 {
 	do {} while( EECR & (1<<EEPE) ); // Wait for completion of previous write.
-	EEAR = addr; // Set EEPROM address register.
+	EEARL = (unsigned char)addr; // Set EEPROM low address register.
+	EEARH = (unsigned char)(addr>>8); // Set EEPROM high address register.
 	EECR = (1<<EERE); // Start EEPROM read operation.
 	return EEDR; // Return the byte read from EEPROM.
 }
@@ -76,14 +66,16 @@ void eeprom_put_char( unsigned int addr, unsigned char new_value )
 	char old_value; // Old EEPROM value.
 	char diff_mask; // Difference mask, i.e. old value XOR new value.
 
-	cli(); // Ensure atomic operation for the write operation.
+	GIE_voidDisable(); // Ensure atomic operation for the write operation.
 	
 	do {} while( EECR & (1<<EEPE) ); // Wait for completion of previous write.
+	
 	#ifndef EEPROM_IGNORE_SELFPROG
-	do {} while( SPMCSR & (1<<SELFPRGEN) ); // Wait for completion of SPM.
+	do {} while( SPMCSR & (1<<SPMEN) ); // Wait for completion of SPM.
 	#endif
 	
-	EEAR = addr; // Set EEPROM address register.
+	EEARL = (unsigned char)addr; // Set EEPROM low address register.
+	EEARH = (unsigned char)(addr>>8); // Set EEPROM high address register.
 	EECR = (1<<EERE); // Start EEPROM read operation.
 	old_value = EEDR; // Get old EEPROM value.
 	diff_mask = old_value ^ new_value; // Get bit differences.
@@ -121,7 +113,7 @@ void eeprom_put_char( unsigned int addr, unsigned char new_value )
 		}
 	}
 	
-	sei(); // Restore interrupt flag state.
+	GIE_voidEnable(); // Restore interrupt flag state.
 }
 
 // Extensions added as part of Grbl 
