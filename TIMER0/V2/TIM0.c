@@ -1,6 +1,6 @@
 /************************************************/
 /*	Name 	: Zeinab Ali						*/
-/*	Version : V01								*/
+/*	Version : V02								*/
 /************************************************/
 
 #include "STD_TYPES.h"
@@ -22,12 +22,12 @@ void TIM0_voidInitialize(void)
 	/*timer mode */
 	switch(TIM0_cfgArr[0].TIM0_Mode)
 	{
-		case NORMAL:
+		case TIM0_NORMAL:
 			TCCR0B &= ~(1<<WGM02);
 			TCCR0A &= ~(1<<WGM01);
 			TCCR0A &= ~(1<<WGM00);
 		break;
-		case CTC:
+		case TIM0_CTC:
 			TCCR0B &= ~(1<<WGM02);
 			TCCR0A |=  (1<<WGM01);
 			TCCR0A &= ~(1<<WGM00);
@@ -36,89 +36,90 @@ void TIM0_voidInitialize(void)
 	
 	
 	/*channelA mode and ChannelB mode*/
-	if(TIM0_cfgArr[0].TIM0_Mode==NORMAL)
+	if(TIM0_cfgArr[0].TIM0_Mode==TIM0_NORMAL)
 	{
 		TCCR0A &= ~(1<<COM0A1); 
 		TCCR0A &= ~(1<<COM0A0);
 		TCCR0A &= ~(1<<COM0B1); 
 		TCCR0A &= ~(1<<COM0B0);
 	}
-	else if(TIM0_cfgArr[0].TIM0_Mode==CTC)
+	else if(TIM0_cfgArr[0].TIM0_Mode==TIM0_CTC)
 	{
-		switch(TIM0_cfgArr[0].ChannelA_Mode)
+		switch(TIM0_cfgArr[0].TIM0_ChannelA_Mode)
 		{
-			case DIS_CONNECT_OC0A:
+			case TIM0_DIS_CONNECT_OC0A:
 				TCCR0A &= ~(1<<COM0A1); 
 				TCCR0A &= ~(1<<COM0A0);
 			break;
-			case TOGGLE_OC0A:
+			case TIM0_TOGGLE_OC0A:
 				TCCR0A &= ~(1<<COM0A1); 
 				TCCR0A |=  (1<<COM0A0);
 			break;
-			case CLEAR_OC0A:
+			case TIM0_CLEAR_OC0A:
 				TCCR0A |=  (1<<COM0A1); 
 				TCCR0A &= ~(1<<COM0A0);
 			break;
-			case SET_OC0A:
+			case TIM0_SET_OC0A:
 				TCCR0A |=  (1<<COM0A1); 
 				TCCR0A |=  (1<<COM0A0);
 			break;
 		}
 		
-		switch(TIM0_cfgArr[0].ChannelB_Mode)
+		switch(TIM0_cfgArr[0].TIM0_ChannelB_Mode)
 		{
-			case DIS_CONNECT_OC0B:
+			case TIM0_DIS_CONNECT_OC0B:
 				TCCR0A &= ~(1<<COM0B1); 
 				TCCR0A &= ~(1<<COM0B0);
 			break;
-			case TOGGLE_OC0B:
+			case TIM0_TOGGLE_OC0B:
 				TCCR0A &= ~(1<<COM0B1); 
 				TCCR0A |=  (1<<COM0B0);
 			break;
-			case CLEAR_OC0B:
+			case TIM0_CLEAR_OC0B:
 				TCCR0A |=  (1<<COM0B1); 
 				TCCR0A &= ~(1<<COM0B0);
 			break;
-			case SET_OC0B:
+			case TIM0_SET_OC0B:
 				TCCR0A |=  (1<<COM0B1); 
 				TCCR0A |=  (1<<COM0B0);
 			break;
 		}
 	}
+	
 
 	TIM0_voidSetCallBack(StundFn);
 	TIM0_voidSetCallBackCA(StundFn);
 	TIM0_voidSetCallBackCB(StundFn);
-	
+
 	/*disable all interrupts*/
 	TIMSK0 &= ~(1<<TOIE0);
 	TIMSK0 &= ~(1<<OCIE0A);
 	TIMSK0 &= ~(1<<OCIE0B);
 	
 	/*clock*/
-	switch(TIM0_cfgArr[0].CLOCK)
+	switch(TIM0_cfgArr[0].TIM0_CLOCK)
 	{
-		case DIV_PRESCAl_1:
+		case TIM0_DIV_PRESCAl_1:
 			TCCR0B &= ~(1<<CS02); 
 			TCCR0B &= ~(1<<CS01);  
 			TCCR0B |=  (1<<CS00); 
 		break;
-		case DIV_PRESCAl_8:
+		case TIM0_DIV_PRESCAl_8:
 			TCCR0B &= ~(1<<CS02); 
 			TCCR0B |=  (1<<CS01);  
 			TCCR0B &= ~(1<<CS00);
 		break;
-		case DIV_PRESCAl_64:
+		case TIM0_DIV_PRESCAl_64:
 			TCCR0B &= ~(1<<CS02); 
 			TCCR0B |=  (1<<CS01);  
 			TCCR0B |=  (1<<CS00);
 		break;
-		case DIV_PRESCAl_256:
+		case TIM0_DIV_PRESCAl_256:
 			TCCR0B |=  (1<<CS02); 
 			TCCR0B &= ~(1<<CS01);  
 			TCCR0B &= ~(1<<CS00);
 		break;
-		case DIV_PRESCAl_1024:
+		case TIM0_DIV_PRESCAl_1024:
 			TCCR0B |=  (1<<CS02); 
 			TCCR0B &= ~(1<<CS01);  
 			TCCR0B |=  (1<<CS00);
