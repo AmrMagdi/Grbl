@@ -3,8 +3,8 @@
 /* Date:    24/2/2018        */
 /* Version: 1.0              */
 /*****************************/
-#include "../../LIB/std_types.h"
-#include "../../LIB/bit_math.h"
+#include "std_types.h"
+#include "bit_math.h"
 
 #include "GIE_reg.h"
 #include "GIE_priv.h"		/*import priv.h first as config.h depends on it*/

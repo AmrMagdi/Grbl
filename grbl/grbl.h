@@ -45,6 +45,7 @@
 #include "system.h"
 #include "defaults.h"
 #include "cpu_map.h"
+#include "TIM1.h"
 #include "planner.h"
 #include "coolant_control.h"
 #include "eeprom.h"
@@ -58,6 +59,7 @@
 #include "report.h"
 #include "serial.h"
 #include "spindle_control.h"
+
 #include "stepper.h"
 #include "jog.h"
 

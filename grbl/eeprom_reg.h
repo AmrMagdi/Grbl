@@ -28,6 +28,7 @@
 #define SPMCSR    *((volatile unsigned char*)(0x57))
 
 #define SPMEN     0
+#define EERE	  0
 
 #define EEPM0     4 //!< EEPROM Programming Mode Bit 0.
 #define EEPM1     5 //!< EEPROM Programming Mode Bit 1.

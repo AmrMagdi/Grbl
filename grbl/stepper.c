@@ -103,8 +103,8 @@ typedef struct {
   #endif
 
   uint8_t execute_step;     // Flags step execution for each interrupt.
-  uint8_t step_pulse_time;  // Step pulse reset time after step rise
-  uint8_t step_outbits;         // The next stepping-bits to be output
+  uint8_t step_pulse_time;  // Step pulse reset time after step rise.
+  uint8_t step_outbits;         // The next stepping-bits to be output.
   uint8_t dir_outbits;
   #ifdef ADAPTIVE_MULTI_AXIS_STEP_SMOOTHING
     uint32_t steps[N_AXIS];
@@ -231,7 +231,8 @@ void st_wake_up()
   #endif
 
   // Enable Stepper Driver Interrupt
-  TIMSK1 |= (1<<OCIE1A);
+  /*TIMSK1 |= (1<<OCIE1A); */
+    TIM1_voidEnableChannelA();
 }
 
 
@@ -239,8 +240,11 @@ void st_wake_up()
 void st_go_idle()
 {
   // Disable Stepper Driver Interrupt. Allow Stepper Port Reset Interrupt to finish, if active.
-  TIMSK1 &= ~(1<<OCIE1A); // Disable Timer1 interrupt
-  TCCR1B = (TCCR1B & ~((1<<CS12) | (1<<CS11))) | (1<<CS10); // Reset clock to no prescaling.
+  /*TIMSK1 &= ~(1<<OCIE1A);*/ // Disable Timer1 interrupt
+  TIM1_voidDisableChannelA();
+  /*TCCR1B = (TCCR1B & ~((1<<CS12) | (1<<CS11))) | (1<<CS10); // Reset clock to no prescaling.*/
+  TIM1_voidSetPrescaler(TIM1_DIV_PRESCAl_1);
+
   busy = false;
 
   // Set stepper driver idle state, disabled or enabled, depending on settings and circumstances.
@@ -1020,3 +1024,4 @@ float st_get_realtime_rate()
   }
   return 0.0f;
 }
+

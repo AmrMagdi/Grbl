@@ -23,7 +23,7 @@
 ****************************************************************************/
 #include "eeprom_reg.h"
 #include "GIE_int.h"
-#include <avr/interrupt.h>
+
 
 
 /*! \brief  Read byte from EEPROM.

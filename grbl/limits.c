@@ -21,6 +21,7 @@
 
 #include "grbl.h"
 
+void WDT_ISR (void);
 
 // Homing axis search distance multiplier. Computed by this value times the cycle travel.
 #ifndef HOMING_AXIS_SEARCH_SCALAR
@@ -48,10 +49,11 @@ void limits_init()
   }
 
   #ifdef ENABLE_SOFTWARE_DEBOUNCE
-    MCUSR &= ~(1<<WDRF);
-    WDTCSR |= (1<<WDCE) | (1<<WDE);
-    WDTCSR = (1<<WDP0); // Set time-out at ~32msec.
+  	  WDT_voidSetCallBack(WDT_ISR);
+  	  WDT_voidInitialize();
   #endif
+
+
 }
 
 
@@ -120,10 +122,17 @@ uint8_t limits_get_state()
   }
 #else // OPTIONAL: Software debounce limit pin routine.
   // Upon limit pin change, enable watchdog timer to create a short delay. 
-  ISR(LIMIT_INT_vect) { if (!(WDTCSR & (1<<WDIE))) { WDTCSR |= (1<<WDIE); } }
-  ISR(WDT_vect) // Watchdog timer ISR
+  ISR(LIMIT_INT_vect) {
+	  if ( Disabled == WDT_u8GetStatus() ) {
+		  WDT_voidEnable();
+	  }
+  }
+
+
+
+  void WDT_ISR (void) // Watchdog timer ISR
   {
-    WDTCSR &= ~(1<<WDIE); // Disable watchdog timer. 
+	  WDT_voidDisable(); // Disable watchdog timer.
     if (sys.state != STATE_ALARM) {  // Ignore if already in alarm state. 
       if (!(sys_rt_exec_alarm)) {
         // Check limit pin state. 
@@ -134,6 +143,8 @@ uint8_t limits_get_state()
       }  
     }
   }
+
+
 #endif
 
 // Homes the specified cycle axes, sets the machine position, and performs a pull-off motion after
