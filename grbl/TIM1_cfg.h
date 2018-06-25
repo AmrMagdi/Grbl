@@ -15,12 +15,13 @@ typedef enum
 
 typedef enum
 {
-	TIM1_DIV_PRESCAl_1=0,
-	TIM1_DIV_PRESCAl_8,
-	TIM1_DIV_PRESCAl_64,
-	TIM1_DIV_PRESCAl_256,
-	TIM1_DIV_PRESCAl_1024,
-}TIM1_CLOCK_cfg;
+	TIM1_DISCONNECT=0,
+	TIM1_DIV_PRESCAL_1,
+	TIM1_DIV_PRESCAL_8,
+	TIM1_DIV_PRESCAL_64,
+	TIM1_DIV_PRESCAL_256,
+	TIM1_DIV_PRESCAL_1024,
+}TIM1_Clock_cfg;
 
 typedef enum
 {
@@ -40,7 +41,7 @@ typedef enum
 
 typedef struct
 {
-	TIM1_CLOCK_cfg TIM1_CLOCK;
+	TIM1_Clock_cfg TIM1_CLOCK;
 	TIM1_Mode_cfg TIM1_Mode;
 	TIM1_ChannelA_Mode_cfg TIM1_ChannelA_Mode;
 	TIM1_ChannelB_Mode_cfg TIM1_ChannelB_Mode;

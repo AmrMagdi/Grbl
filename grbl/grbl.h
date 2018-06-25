@@ -39,13 +39,16 @@
 #include <stdbool.h>
 
 // Define the Grbl system include files. NOTE: Do not alter organization.
+#include "std_types.h"
 #include "config.h"
 #include "nuts_bolts.h"
 #include "settings.h"
 #include "system.h"
 #include "defaults.h"
+
+
+
 #include "cpu_map.h"
-#include "TIM1.h"
 #include "planner.h"
 #include "coolant_control.h"
 #include "eeprom.h"
@@ -57,9 +60,7 @@
 #include "probe.h"
 #include "protocol.h"
 #include "report.h"
-#include "serial.h"
 #include "spindle_control.h"
-
 #include "stepper.h"
 #include "jog.h"
 

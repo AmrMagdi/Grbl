@@ -20,12 +20,12 @@
 */
 
 #include "grbl.h"
-
+#include "UART.h"
 
 void printString(const char *s)
 {
   while (*s)
-    serial_write(*s++);
+	  UART_voidTx(*s++);
 }
 
 
@@ -34,7 +34,7 @@ void printPgmString(const char *s)
 {
   char c;
   while ((c = pgm_read_byte_near(s++)))
-    serial_write(c);
+	  UART_voidTx(c);
 }
 
 
@@ -44,7 +44,7 @@ void printPgmString(const char *s)
 // 	unsigned long i = 0;
 //
 // 	if (n == 0) {
-// 		serial_write('0');
+// 		UART_voidTx('0');
 // 		return;
 // 	}
 //
@@ -54,7 +54,7 @@ void printPgmString(const char *s)
 // 	}
 //
 // 	for (; i > 0; i--)
-// 		serial_write(buf[i - 1] < 10 ?
+// 		UART_voidTx(buf[i - 1] < 10 ?
 // 			'0' + buf[i - 1] :
 // 			'A' + buf[i - 1] - 10);
 // }
@@ -73,9 +73,9 @@ void print_uint8_base10(uint8_t n)
     digit_b = '0' + n % 10;
     n /= 10;
   }
-  serial_write('0' + n);
-  if (digit_b) { serial_write(digit_b); }
-  if (digit_a) { serial_write(digit_a); }
+  UART_voidTx('0' + n);
+  if (digit_b) { UART_voidTx(digit_b); }
+  if (digit_a) { UART_voidTx(digit_a); }
 }
 
 
@@ -90,14 +90,14 @@ void print_uint8_base2_ndigit(uint8_t n, uint8_t digits) {
   }
 
   for (; i > 0; i--)
-      serial_write('0' + buf[i - 1]);
+	  UART_voidTx('0' + buf[i - 1]);
 }
 
 
 void print_uint32_base10(uint32_t n)
 {
   if (n == 0) {
-    serial_write('0');
+	  UART_voidTx('0');
     return;
   }
 
@@ -110,14 +110,14 @@ void print_uint32_base10(uint32_t n)
   }
 
   for (; i > 0; i--)
-    serial_write('0' + buf[i-1]);
+	  UART_voidTx('0' + buf[i-1]);
 }
 
 
 void printInteger(long n)
 {
   if (n < 0) {
-    serial_write('-');
+	  UART_voidTx('-');
     print_uint32_base10(-n);
   } else {
     print_uint32_base10(n);
@@ -133,7 +133,7 @@ void printInteger(long n)
 void printFloat(float n, uint8_t decimal_places)
 {
   if (n < 0) {
-    serial_write('-');
+	  UART_voidTx('-');
     n = -n;
   }
 
@@ -162,8 +162,8 @@ void printFloat(float n, uint8_t decimal_places)
 
   // Print the generated string.
   for (; i > 0; i--) {
-    if (i == decimal_places) { serial_write('.'); } // Insert decimal point in right place.
-    serial_write(buf[i-1]);
+    if (i == decimal_places) { UART_voidTx('.'); } // Insert decimal point in right place.
+    UART_voidTx(buf[i-1]);
   }
 }
 

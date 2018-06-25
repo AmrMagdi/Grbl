@@ -32,7 +32,7 @@
 // Scientific notation is officially not supported by g-code, and the 'E' character may
 // be a g-code word on some CNC systems. So, 'E' notation will not be recognized.
 // NOTE: Thanks to Radu-Eosif Mihailescu for identifying the issues with using strtod().
-uint8_t read_float(char *line, uint8_t *char_counter, float *float_ptr)
+u8 read_float(char *line, uint8_t *char_counter, float *float_ptr)
 {
   char *ptr = line + *char_counter;
   unsigned char c;
@@ -50,10 +50,10 @@ uint8_t read_float(char *line, uint8_t *char_counter, float *float_ptr)
   }
 
   // Extract number into fast integer. Track decimal in terms of exponent value.
-  uint32_t intval = 0;
-  int8_t exp = 0;
-  uint8_t ndigit = 0;
-  bool isdecimal = false;
+  u32 intval = 0;
+  s8 exp = 0;
+  u8 ndigit = 0;
+  boolean isdecimal = false;
   while(1) {
     c -= '0';
     if (c <= 9) {
@@ -109,7 +109,7 @@ uint8_t read_float(char *line, uint8_t *char_counter, float *float_ptr)
 
 
 // Non-blocking delay function used for general operation and suspend features.
-void delay_sec(float seconds, uint8_t mode)
+void delay_sec(float seconds, u8 mode)
 {
  	uint16_t i = ceil(1000/DWELL_TIME_STEP*seconds);
 	while (i-- > 0) {
@@ -128,7 +128,7 @@ void delay_sec(float seconds, uint8_t mode)
 
 // Delays variable defined milliseconds. Compiler compatibility fix for _delay_ms(),
 // which only accepts constants in future compiler releases.
-void delay_ms(uint16_t ms)
+void delay_ms(u8 ms)
 {
   while ( ms-- ) { _delay_ms(1); }
 }
@@ -137,7 +137,7 @@ void delay_ms(uint16_t ms)
 // Delays variable defined microseconds. Compiler compatibility fix for _delay_us(),
 // which only accepts constants in future compiler releases. Written to perform more
 // efficiently with larger delays, as the counter adds parasitic time in each iteration.
-void delay_us(uint32_t us)
+void delay_us(u32 us)
 {
   while (us) {
     if (us < 10) {
@@ -179,7 +179,7 @@ float convert_delta_vector_to_unit_vector(float *vector)
 
 float limit_value_by_axis_maximum(float *max_value, float *unit_vec)
 {
-  uint8_t idx;
+  u8 idx;
   float limit_value = SOME_LARGE_VALUE;
   for (idx=0; idx<N_AXIS; idx++) {
     if (unit_vec[idx] != 0) {  // Avoid divide by zero.

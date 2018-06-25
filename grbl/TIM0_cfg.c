@@ -1,15 +1,13 @@
-
 /************************************************/
 /*	Name 	: Zeinab Ali						*/
-/*	Version : V01								*/
+/*	Version : V02								*/
 /************************************************/
 
 #include "std_types.h"
-#include "TIM1_cfg.h"
+#include "TIM0_cfg.h"
 
-const TIM1_cfg TIM1_cfgArr[1]=
+const TIM0_cfg TIM0_cfgArr[1]=
 {
-	{TIM1_DIV_PRESCAL_1,TIM1_CTC,TIM1_DIS_CONNECT_OC1A,TIM1_DIS_CONNECT_OC1B}
+	{TIM0_DIV_PRESCAL_1,TIM0_NORMAL,TIM0_DIS_CONNECT_OC0A,TIM0_DIS_CONNECT_OC0B}
 };
-
 

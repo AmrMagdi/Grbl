@@ -20,6 +20,8 @@
 */
 
 #include "grbl.h"
+#include "WDT.h"
+#include "PCINT.h"
 
 void WDT_ISR (void);
 

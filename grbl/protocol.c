@@ -19,7 +19,9 @@
   along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "std_types.h"
 #include "grbl.h"
+#include "UART.h"
 
 // Define line flags. Includes comment type tracking and line overflow detection.
 #define LINE_FLAG_OVERFLOW bit(0)
@@ -75,7 +77,7 @@ void protocol_main_loop()
 
     // Process one line of incoming serial data, as the data becomes available. Performs an
     // initial filtering by removing spaces and comments and capitalizing all letters.
-    while((c = serial_read()) != SERIAL_NO_DATA) {
+    while((c = UART_u8Rx()) != BUFFER_NO_DATA) {
       if ((c == '\n') || (c == '\r')) { // End of line reached
 
         protocol_execute_realtime(); // Runtime command check point.
@@ -680,7 +682,7 @@ static void protocol_exec_rt_suspend()
               // Block if safety door re-opened during prior restore actions.
               if (bit_isfalse(sys.suspend,SUSPEND_RESTART_RETRACT)) {
                 // NOTE: Laser mode will honor this delay. An exhaust system is often controlled by this pin.
-                coolant_set_state((restore_condition & (PL_COND_FLAG_COOLANT_FLOOD | PL_COND_FLAG_COOLANT_MIST)));
+                coolant_set_state((restore_condition & (PL_COND_FLAG_COOLANT_FLOOD | PL_COND_FLAG_COOLANT_FLOOD)));
                 delay_sec(SAFETY_DOOR_COOLANT_DELAY, DELAY_MODE_SYS_SUSPEND);
               }
             }

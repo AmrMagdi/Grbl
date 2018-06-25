@@ -19,8 +19,9 @@
   along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "std_types.h"
 #include "grbl.h"
-
+#include "UART.h"
 
 // Declare system global variable structure
 system_t sys;
@@ -39,7 +40,7 @@ volatile uint8_t sys_rt_exec_accessory_override; // Global realtime executor bit
 int main(void)
 {
   // Initialize system upon power-up.
-  serial_init();   // Setup serial baud rate and interrupts
+  UART_voidInitialize();   // Setup serial baud rate and interrupts
   settings_init(); // Load Grbl settings from EEPROM
   stepper_init();  // Configure stepper pins and interrupt timers
   system_init();   // Configure pinout pins and pin-change interrupt
@@ -85,7 +86,7 @@ int main(void)
     sys_rt_exec_accessory_override = 0;
 
     // Reset Grbl primary systems.
-    serial_reset_read_buffer(); // Clear serial read buffer
+    UART_voidClearRxBuffer(); // Clear serial read buffer
     gc_init(); // Set g-code parser to default state
     spindle_init();
     coolant_init();

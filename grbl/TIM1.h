@@ -11,13 +11,17 @@
 
 extern void TIM1_voidInitialize(void);
 
+/* Configure */
+
+extern void TIM1_voidSetPrescaler(TIM1_Clock_cfg clk);
+extern void TIM1_voidSetMode(TIM1_Mode_cfg mode);
 
 /*normal mode */
 extern void TIM1_voidEnable(void);
 extern void TIM1_voidDisable(void);
 extern void TIM1_voidSetTIM1Reg(u16 Copy_u16Reg);
 extern void TIM1_voidSetCallBack(void (*Copy_PTR2Fn)(void));
-extern void TIM1_voidSetPrescaler(TIM1_CLOCK_cfg clk);
+
 
 /*channelA*/
 extern void TIM1_voidEnableChannelA(void);

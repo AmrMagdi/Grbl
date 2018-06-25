@@ -67,16 +67,16 @@
 // Read a floating point value from a string. Line points to the input buffer, char_counter
 // is the indexer pointing to the current character of the line, while float_ptr is
 // a pointer to the result variable. Returns true when it succeeds
-uint8_t read_float(char *line, uint8_t *char_counter, float *float_ptr);
+u8 read_float(char *line, u8 *char_counter, float *float_ptr);
 
 // Non-blocking delay function used for general operation and suspend features.
-void delay_sec(float seconds, uint8_t mode);
+void delay_sec(float seconds, u8 mode);
 
 // Delays variable-defined milliseconds. Compiler compatibility fix for _delay_ms().
-void delay_ms(uint16_t ms);
+void delay_ms(u16 ms);
 
 // Delays variable-defined microseconds. Compiler compatibility fix for _delay_us().
-void delay_us(uint32_t us);
+void delay_us(u32 us);
 
 // Computes hypotenuse, avoiding avr-gcc's bloated version and the extra error checking.
 float hypot_f(float x, float y);

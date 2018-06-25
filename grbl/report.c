@@ -25,29 +25,29 @@
   different style feedback is desired (i.e. JSON), then a user can change these following
   methods to accomodate their needs.
 */
-
+#include "std_types.h"
 #include "grbl.h"
-
+#include "UART.h"
 
 // Internal report utilities to reduce flash with repetitive tasks turned into functions.
-void report_util_setting_prefix(uint8_t n) { serial_write('$'); print_uint8_base10(n); serial_write('='); }
+void report_util_setting_prefix(uint8_t n) { UART_voidTx('$'); print_uint8_base10(n); UART_voidTx('='); }
 static void report_util_line_feed() { printPgmString(PSTR("\r\n")); }
-static void report_util_feedback_line_feed() { serial_write(']'); report_util_line_feed(); }
+static void report_util_feedback_line_feed() { UART_voidTx(']'); report_util_line_feed(); }
 static void report_util_gcode_modes_G() { printPgmString(PSTR(" G")); }
 static void report_util_gcode_modes_M() { printPgmString(PSTR(" M")); }
-// static void report_util_comment_line_feed() { serial_write(')'); report_util_line_feed(); }
+// static void report_util_comment_line_feed() { UART_voidTx(')'); report_util_line_feed(); }
 static void report_util_axis_values(float *axis_value) {
   uint8_t idx;
   for (idx=0; idx<N_AXIS; idx++) {
     printFloat_CoordValue(axis_value[idx]);
-    if (idx < (N_AXIS-1)) { serial_write(','); }
+    if (idx < (N_AXIS-1)) { UART_voidTx(','); }
   }
 }
 
 /*
 static void report_util_setting_string(uint8_t n) {
-  serial_write(' ');
-  serial_write('(');
+  UART_voidTx(' ');
+  UART_voidTx('(');
   switch(n) {
     case 0: printPgmString(PSTR("stp pulse")); break;
     case 1: printPgmString(PSTR("idl delay")); break; 
@@ -78,7 +78,7 @@ static void report_util_setting_string(uint8_t n) {
         n -= AXIS_SETTINGS_INCREMENT;
         idx++;
       }
-      serial_write(n+'x');
+      UART_voidTx(n+'x');
       switch (idx) {
         case 0: printPgmString(PSTR(":stp/mm")); break;
         case 1: printPgmString(PSTR(":mm/min")); break;
@@ -235,7 +235,7 @@ void report_probe_parameters()
   float print_position[N_AXIS];
   system_convert_array_steps_to_mpos(print_position,sys_probe_position);
   report_util_axis_values(print_position);
-  serial_write(':');
+  UART_voidTx(':');
   print_uint8_base10(sys.probe_succeeded);
   report_util_feedback_line_feed();
 }
@@ -257,7 +257,7 @@ void report_ngc_parameters()
       case 7: printPgmString(PSTR("30")); break;
       default: print_uint8_base10(coord_select+54); break; // G54-G59
     }
-    serial_write(':');
+    UART_voidTx(':');
     report_util_axis_values(coord_data);
     report_util_feedback_line_feed();
   }
@@ -300,8 +300,8 @@ void report_gcode_modes()
   if (gc_state.modal.program_flow) {
     report_util_gcode_modes_M();
     switch (gc_state.modal.program_flow) {
-      case PROGRAM_FLOW_PAUSED : serial_write('0'); break;
-      // case PROGRAM_FLOW_OPTIONAL_STOP : serial_write('1'); break; // M1 is ignored and not supported.
+      case PROGRAM_FLOW_PAUSED : UART_voidTx('0'); break;
+      // case PROGRAM_FLOW_OPTIONAL_STOP : UART_voidTx('1'); break; // M1 is ignored and not supported.
       case PROGRAM_FLOW_COMPLETED_M2 : 
       case PROGRAM_FLOW_COMPLETED_M30 : 
         print_uint8_base10(gc_state.modal.program_flow);
@@ -311,20 +311,20 @@ void report_gcode_modes()
 
   report_util_gcode_modes_M();
   switch (gc_state.modal.spindle) {
-    case SPINDLE_ENABLE_CW : serial_write('3'); break;
-    case SPINDLE_ENABLE_CCW : serial_write('4'); break;
-    case SPINDLE_DISABLE : serial_write('5'); break;
+    case SPINDLE_ENABLE_CW : UART_voidTx('3'); break;
+    case SPINDLE_ENABLE_CCW : UART_voidTx('4'); break;
+    case SPINDLE_DISABLE : UART_voidTx('5'); break;
   }
 
   #ifdef ENABLE_M7
     if (gc_state.modal.coolant) { // Note: Multiple coolant states may be active at the same time.
-      if (gc_state.modal.coolant & PL_COND_FLAG_COOLANT_MIST) { report_util_gcode_modes_M(); serial_write('7'); }
-      if (gc_state.modal.coolant & PL_COND_FLAG_COOLANT_FLOOD) { report_util_gcode_modes_M(); serial_write('8'); }
-    } else { report_util_gcode_modes_M(); serial_write('9'); }
+      if (gc_state.modal.coolant & PL_COND_FLAG_COOLANT_MIST) { report_util_gcode_modes_M(); UART_voidTx('7'); }
+      if (gc_state.modal.coolant & PL_COND_FLAG_COOLANT_FLOOD) { report_util_gcode_modes_M(); UART_voidTx('8'); }
+    } else { report_util_gcode_modes_M(); UART_voidTx('9'); }
   #else
     report_util_gcode_modes_M();
-    if (gc_state.modal.coolant) { serial_write('8'); }
-    else { serial_write('9'); }
+    if (gc_state.modal.coolant) { UART_voidTx('8'); }
+    else { UART_voidTx('9'); }
   #endif
 
   #ifdef ENABLE_PARKING_OVERRIDE_CONTROL
@@ -353,16 +353,16 @@ void report_startup_line(uint8_t n, char *line)
 {
   printPgmString(PSTR("$N"));
   print_uint8_base10(n);
-  serial_write('=');
+  UART_voidTx('=');
   printString(line);
   report_util_line_feed();
 }
 
 void report_execute_startup_message(char *line, uint8_t status_code)
 {
-  serial_write('>');
+	UART_voidTx('>');
   printString(line);
-  serial_write(':');
+  UART_voidTx(':');
   report_status_message(status_code);
 }
 
@@ -374,71 +374,71 @@ void report_build_info(char *line)
   report_util_feedback_line_feed();
   printPgmString(PSTR("[OPT:")); // Generate compile-time build option list
   #ifdef VARIABLE_SPINDLE
-    serial_write('V');
+  UART_voidTx('V');
   #endif
   #ifdef USE_LINE_NUMBERS
-    serial_write('N');
+  UART_voidTx('N');
   #endif
   #ifdef ENABLE_M7
-    serial_write('M');
+  UART_voidTx('M');
   #endif
   #ifdef COREXY
-    serial_write('C');
+  UART_voidTx('C');
   #endif
   #ifdef PARKING_ENABLE
-    serial_write('P');
+  UART_voidTx('P');
   #endif
   #ifdef HOMING_FORCE_SET_ORIGIN
-    serial_write('Z');
+  UART_voidTx('Z');
   #endif
   #ifdef HOMING_SINGLE_AXIS_COMMANDS
-    serial_write('H');
+  UART_voidTx('H');
   #endif
   #ifdef LIMITS_TWO_SWITCHES_ON_AXES
-    serial_write('T');
+  UART_voidTx('T');
   #endif
   #ifdef ALLOW_FEED_OVERRIDE_DURING_PROBE_CYCLES
-    serial_write('A');
+  UART_voidTx('A');
   #endif
   #ifdef USE_SPINDLE_DIR_AS_ENABLE_PIN
-    serial_write('D');
+  UART_voidTx('D');
   #endif
   #ifdef SPINDLE_ENABLE_OFF_WITH_ZERO_SPEED
-    serial_write('0');
+  UART_voidTx('0');
   #endif
   #ifdef ENABLE_SOFTWARE_DEBOUNCE
-    serial_write('S');
+  UART_voidTx('S');
   #endif
   #ifdef ENABLE_PARKING_OVERRIDE_CONTROL
-    serial_write('R');
+  UART_voidTx('R');
   #endif
   #ifndef ENABLE_RESTORE_EEPROM_WIPE_ALL // NOTE: Shown when disabled.
-    serial_write('*');
+  UART_voidTx('*');
   #endif
   #ifndef ENABLE_RESTORE_EEPROM_DEFAULT_SETTINGS // NOTE: Shown when disabled.
-    serial_write('$');
+  UART_voidTx('$');
   #endif
   #ifndef ENABLE_RESTORE_EEPROM_CLEAR_PARAMETERS // NOTE: Shown when disabled.
-    serial_write('#');
+  UART_voidTx('#');
   #endif
   #ifndef ENABLE_BUILD_INFO_WRITE_COMMAND // NOTE: Shown when disabled.
-    serial_write('I');
+  UART_voidTx('I');
   #endif
   #ifndef FORCE_BUFFER_SYNC_DURING_EEPROM_WRITE // NOTE: Shown when disabled.
-    serial_write('E');
+  UART_voidTx('E');
   #endif
   #ifndef FORCE_BUFFER_SYNC_DURING_WCO_CHANGE // NOTE: Shown when disabled.
-    serial_write('W');
+  UART_voidTx('W');
   #endif
   #ifndef HOMING_INIT_LOCK
-    serial_write('L');
+  UART_voidTx('L');
   #endif
 
   // NOTE: Compiled values, like override increments/max/min values, may be added at some point later.
-  serial_write(',');
+  UART_voidTx(',');
   print_uint8_base10(BLOCK_BUFFER_SIZE-1);
-  serial_write(',');
-  print_uint8_base10(RX_BUFFER_SIZE);
+  UART_voidTx(',');
+  print_uint8_base10(Buffer_cfgArr[0].UART_RxBufferLen);
 
   report_util_feedback_line_feed();
 }
@@ -467,15 +467,15 @@ void report_realtime_status()
   system_convert_array_steps_to_mpos(print_position,current_position);
 
   // Report current machine state and sub-states
-  serial_write('<');
+  UART_voidTx('<');
   switch (sys.state) {
     case STATE_IDLE: printPgmString(PSTR("Idle")); break;
     case STATE_CYCLE: printPgmString(PSTR("Run")); break;
     case STATE_HOLD:
       if (!(sys.suspend & SUSPEND_JOG_CANCEL)) {
         printPgmString(PSTR("Hold:"));
-        if (sys.suspend & SUSPEND_HOLD_COMPLETE) { serial_write('0'); } // Ready to resume
-        else { serial_write('1'); } // Actively holding
+        if (sys.suspend & SUSPEND_HOLD_COMPLETE) { UART_voidTx('0'); } // Ready to resume
+        else { UART_voidTx('1'); } // Actively holding
         break;
       } // Continues to print jog state during jog cancel.
     case STATE_JOG: printPgmString(PSTR("Jog")); break;
@@ -485,16 +485,16 @@ void report_realtime_status()
     case STATE_SAFETY_DOOR:
       printPgmString(PSTR("Door:"));
       if (sys.suspend & SUSPEND_INITIATE_RESTORE) {
-        serial_write('3'); // Restoring
+    	  UART_voidTx('3'); // Restoring
       } else {
         if (sys.suspend & SUSPEND_RETRACT_COMPLETE) {
           if (sys.suspend & SUSPEND_SAFETY_DOOR_AJAR) {
-            serial_write('1'); // Door ajar
+        	  UART_voidTx('1'); // Door ajar
           } else {
-            serial_write('0');
+        	  UART_voidTx('0');
           } // Door closed and ready to resume
         } else {
-          serial_write('2'); // Retracting
+        	UART_voidTx('2'); // Retracting
         }
       }
       break;
@@ -527,8 +527,8 @@ void report_realtime_status()
     if (bit_istrue(settings.status_report_mask,BITFLAG_RT_STATUS_BUFFER_STATE)) {
       printPgmString(PSTR("|Bf:"));
       print_uint8_base10(plan_get_block_buffer_available());
-      serial_write(',');
-      print_uint8_base10(serial_get_rx_buffer_available());
+      UART_voidTx(',');
+      print_uint8_base10(UART_u8GetNumRxBufferFree());
     }
   #endif
 
@@ -551,7 +551,7 @@ void report_realtime_status()
     #ifdef VARIABLE_SPINDLE
       printPgmString(PSTR("|FS:"));
       printFloat_RateValue(st_get_realtime_rate());
-      serial_write(',');
+      UART_voidTx(',');
       printFloat(sys.spindle_speed,N_DECIMAL_RPMVALUE);
     #else
       printPgmString(PSTR("|F:"));
@@ -565,19 +565,19 @@ void report_realtime_status()
     uint8_t prb_pin_state = probe_get_state();
     if (lim_pin_state | ctrl_pin_state | prb_pin_state) {
       printPgmString(PSTR("|Pn:"));
-      if (prb_pin_state) { serial_write('P'); }
+      if (prb_pin_state) { UART_voidTx('P'); }
       if (lim_pin_state) {
-        if (bit_istrue(lim_pin_state,bit(X_AXIS))) { serial_write('X'); }
-        if (bit_istrue(lim_pin_state,bit(Y_AXIS))) { serial_write('Y'); }
-        if (bit_istrue(lim_pin_state,bit(Z_AXIS))) { serial_write('Z'); }
+        if (bit_istrue(lim_pin_state,bit(X_AXIS))) { UART_voidTx('X'); }
+        if (bit_istrue(lim_pin_state,bit(Y_AXIS))) { UART_voidTx('Y'); }
+        if (bit_istrue(lim_pin_state,bit(Z_AXIS))) { UART_voidTx('Z'); }
       }
       if (ctrl_pin_state) {
         #ifdef ENABLE_SAFETY_DOOR_INPUT_PIN
-          if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_SAFETY_DOOR)) { serial_write('D'); }
+          if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_SAFETY_DOOR)) { UART_voidTx('D'); }
         #endif
-        if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_RESET)) { serial_write('R'); }
-        if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_FEED_HOLD)) { serial_write('H'); }
-        if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_CYCLE_START)) { serial_write('S'); }
+        if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_RESET)) { UART_voidTx('R'); }
+        if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_FEED_HOLD)) { UART_voidTx('H'); }
+        if (bit_istrue(ctrl_pin_state,CONTROL_PIN_INDEX_CYCLE_START)) { UART_voidTx('S'); }
       }
     }
   #endif
@@ -602,9 +602,9 @@ void report_realtime_status()
       } else { sys.report_ovr_counter = (REPORT_OVR_REFRESH_IDLE_COUNT-1); }
       printPgmString(PSTR("|Ov:"));
       print_uint8_base10(sys.f_override);
-      serial_write(',');
+      UART_voidTx(',');
       print_uint8_base10(sys.r_override);
-      serial_write(',');
+      UART_voidTx(',');
       print_uint8_base10(sys.spindle_speed_ovr);
 
       uint8_t sp_state = spindle_get_state();
@@ -614,25 +614,25 @@ void report_realtime_status()
         if (sp_state) { // != SPINDLE_STATE_DISABLE
           #ifdef VARIABLE_SPINDLE 
             #ifdef USE_SPINDLE_DIR_AS_ENABLE_PIN
-              serial_write('S'); // CW
+        	UART_voidTx('S'); // CW
             #else
-              if (sp_state == SPINDLE_STATE_CW) { serial_write('S'); } // CW
-              else { serial_write('C'); } // CCW
+              if (sp_state == SPINDLE_STATE_CW) { UART_voidTx('S'); } // CW
+              else { UART_voidTx('C'); } // CCW
             #endif
           #else
-            if (sp_state & SPINDLE_STATE_CW) { serial_write('S'); } // CW
-            else { serial_write('C'); } // CCW
+            if (sp_state & SPINDLE_STATE_CW) { UART_voidTx('S'); } // CW
+            else { UART_voidTx('C'); } // CCW
           #endif
         }
-        if (cl_state & COOLANT_STATE_FLOOD) { serial_write('F'); }
+        if (cl_state & COOLANT_STATE_FLOOD) { UART_voidTx('F'); }
         #ifdef ENABLE_M7
-          if (cl_state & COOLANT_STATE_MIST) { serial_write('M'); }
+          if (cl_state & COOLANT_STATE_MIST) { UART_voidTx('M'); }
         #endif
       }  
     }
   #endif
 
-  serial_write('>');
+    UART_voidTx('>');
   report_util_line_feed();
 }
 

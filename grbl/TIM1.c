@@ -12,37 +12,7 @@ static void StundFn(void);
  {
 	 
  }
-extern void TIM1_voidSetPrescaler(TIM1_CLOCK_cfg clk){
-	/*clock*/
-		switch(clk)
-		{
-			case TIM1_DIV_PRESCAl_1:
-				TCCR1B &= ~(1<<CS12);
-				TCCR1B &= ~(1<<CS11);
-				TCCR1B |=  (1<<CS10);
-			break;
-			case TIM1_DIV_PRESCAl_8:
-				TCCR1B &= ~(1<<CS12);
-				TCCR1B |=  (1<<CS11);
-				TCCR1B &= ~(1<<CS10);
-			break;
-			case TIM1_DIV_PRESCAl_64:
-				TCCR1B &= ~(1<<CS12);
-				TCCR1B |=  (1<<CS11);
-				TCCR1B |=  (1<<CS10);
-			break;
-			case TIM1_DIV_PRESCAl_256:
-				TCCR1B |=  (1<<CS12);
-				TCCR1B &= ~(1<<CS11);
-				TCCR1B &= ~(1<<CS10);
-			break;
-			case TIM1_DIV_PRESCAl_1024:
-				TCCR1B |=  (1<<CS12);
-				TCCR1B &= ~(1<<CS11);
-				TCCR1B |=  (1<<CS10);
-			break;
-		}
-}
+
 extern void TIM1_voidInitialize(void)
 {
 	/*force CMP*/
@@ -131,30 +101,90 @@ extern void TIM1_voidInitialize(void)
 	/*clock*/
 	switch(TIM1_cfgArr[0].TIM1_CLOCK)
 	{
-		case TIM1_DIV_PRESCAl_1:
+		case TIM1_DIV_PRESCAL_1:
 			TCCR1B &= ~(1<<CS12); 
 			TCCR1B &= ~(1<<CS11);  
 			TCCR1B |=  (1<<CS10); 
 		break;
-		case TIM1_DIV_PRESCAl_8:
+		case TIM1_DIV_PRESCAL_8:
 			TCCR1B &= ~(1<<CS12); 
 			TCCR1B |=  (1<<CS11);  
 			TCCR1B &= ~(1<<CS10);
 		break;
-		case TIM1_DIV_PRESCAl_64:
+		case TIM1_DIV_PRESCAL_64:
 			TCCR1B &= ~(1<<CS12); 
 			TCCR1B |=  (1<<CS11);  
 			TCCR1B |=  (1<<CS10);
 		break;
-		case TIM1_DIV_PRESCAl_256:
+		case TIM1_DIV_PRESCAL_256:
 			TCCR1B |=  (1<<CS12); 
 			TCCR1B &= ~(1<<CS11);  
 			TCCR1B &= ~(1<<CS10);
 		break;
-		case TIM1_DIV_PRESCAl_1024:
+		case TIM1_DIV_PRESCAL_1024:
 			TCCR1B |=  (1<<CS12); 
 			TCCR1B &= ~(1<<CS11);  
 			TCCR1B |=  (1<<CS10);
+		break;
+	}
+}
+
+/*********************************************************************/
+/* Configure Prescaler */
+
+extern void TIM1_voidSetPrescaler(TIM1_Clock_cfg clk){
+	/*clock*/
+		switch(clk)
+		{
+			case TIM1_DISCONNECT:
+				TCCR1B &= ~(1<<CS12);
+				TCCR1B &= ~(1<<CS11);
+				TCCR1B &= ~(1<<CS10);
+			break;
+			case TIM1_DIV_PRESCAL_1:
+				TCCR1B &= ~(1<<CS12);
+				TCCR1B &= ~(1<<CS11);
+				TCCR1B |=  (1<<CS10);
+			break;
+			case TIM1_DIV_PRESCAL_8:
+				TCCR1B &= ~(1<<CS12);
+				TCCR1B |=  (1<<CS11);
+				TCCR1B &= ~(1<<CS10);
+			break;
+			case TIM1_DIV_PRESCAL_64:
+				TCCR1B &= ~(1<<CS12);
+				TCCR1B |=  (1<<CS11);
+				TCCR1B |=  (1<<CS10);
+			break;
+			case TIM1_DIV_PRESCAL_256:
+				TCCR1B |=  (1<<CS12);
+				TCCR1B &= ~(1<<CS11);
+				TCCR1B &= ~(1<<CS10);
+			break;
+			case TIM1_DIV_PRESCAL_1024:
+				TCCR1B |=  (1<<CS12);
+				TCCR1B &= ~(1<<CS11);
+				TCCR1B |=  (1<<CS10);
+			break;
+		}
+}
+
+/*********************************************************************/
+/* Configure Mode */
+
+extern void TIM1_voidSetMode(TIM1_Mode_cfg mode){
+	switch(mode){
+	case TIM1_NORMAL:
+		TCCR1B &= ~(1<<WGM13);
+		TCCR1B &= ~(1<<WGM12);
+		TCCR1A &= ~(1<<WGM11);
+		TCCR1A &= ~(1<<WGM10);
+		break;
+	case TIM1_CTC:
+		TCCR1B &= ~(1<<WGM13);
+		TCCR1B |=  (1<<WGM12);
+		TCCR1A &= ~(1<<WGM11);
+		TCCR1A &= ~(1<<WGM10);
 		break;
 	}
 }
